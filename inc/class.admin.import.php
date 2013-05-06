@@ -93,20 +93,26 @@ class SimpleTaxonomy_Admin_Import{
 	}
 	
 	/**
-	 * Create term on a taxonomy if necessary
+	 * Create term on a taxonomy if necessary with description
 	 *
 	 * @param string $taxonomy 
 	 * @param string $term_name 
 	 * @param integer $parent 
 	 * @return integer|boolean
 	 * @author Amaury Balmer
+	 * @modified Dileep stanley george
+	 * 
 	 */
 	private static function createTerm( $taxonomy = '', $term_name = '', $parent = 0 ) {
 		$term_name = trim($term_name);
+
 		if ( empty($term_name) )
 			return false;
+
+		$termArray=explode(",", $term_name);
+
 		
-		$id = term_exists($term_name, $taxonomy, $parent);
+		$id = term_exists($termArray[0], $taxonomy, $parent);
 		if ( is_array($id) )
 			$id = (int) $id['term_id'];
 		
@@ -115,7 +121,7 @@ class SimpleTaxonomy_Admin_Import{
 		}
 		
 		// Insert on DB
-		$term = wp_insert_term( $term_name, $taxonomy, array('parent' => $parent) );
+		$term = wp_insert_term( $termArray[0], $taxonomy, array('parent' => $parent,'description'=>$termArray[1]) );
 		
 		// Cache
 		clean_term_cache($parent, $taxonomy);
